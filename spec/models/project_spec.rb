@@ -46,4 +46,25 @@ RSpec.describe Project, type: :model do
     # expect(new_project.errors[:name]).to include("has already been taken")
 
   end
+
+  describe  "late status" do
+
+    # 締切日が過ぎていれば遅延
+    it "is late when the due date is past today" do
+      project=FactoryBot.create(:project,:due_yesterday)
+      expect(project).to be_late
+    end
+
+    # 締切日が今日
+    it "is on time when the due date is today" do
+      project=FactoryBot.create(:project,:due_today)
+      expect(project).not_to be_late
+    end
+
+    # 締切日が未来ならスケジュールどおりであること
+    it "is on time when the due date is in the future" do
+      project=FactoryBot.create(:project,:due_tomorrow)
+      expect(project).not_to be_late
+    end
+  end
 end
