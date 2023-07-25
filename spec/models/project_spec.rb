@@ -1,6 +1,6 @@
 require 'rails_helper'
 
-RSpec.describe Project, type: :model do
+RSpec.describe Project do
 
   it "does not allow duplicate project depending on user"do
     user= User.create(
@@ -66,5 +66,10 @@ RSpec.describe Project, type: :model do
       project=FactoryBot.create(:project,:due_tomorrow)
       expect(project).not_to be_late
     end
+  end
+
+  it "can have many notes" do
+    project=FactoryBot.create(:project,:with_notes)
+    expect(project.notes.length).to eq 5
   end
 end

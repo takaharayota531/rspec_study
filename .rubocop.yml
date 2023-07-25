@@ -1,0 +1,20 @@
+inherit_from: .rubocop_todo.yml
+
+require:
+  - rubocop-performance # 拡張機能
+  - rubocop-rails # 拡張機能
+  - rubocop-rspec # 拡張機能
+  - rubocop-capybara
+  - rubocop-factory_bot
+
+AllCops:
+  NewCops: enable
+  Exclude:
+    - 'bin/*'
+    - 'db/**/*'
+    - 'tmp/**/*'
+    - 'vendor/**/*'
+#  SuggestExtensions: false
+  TargetRubyVersion: 3.2.0
+
+# RuboCopの設定を追記する

@@ -1,9 +1,9 @@
 require 'rails_helper'
 
-RSpec.describe Note, type: :model do
+RSpec.describe Note do
 
 
-  before(:each) do
+  before do
     @user=User.create(
       first_name: "Aaronq",
       last_name: "Sumnerq",
@@ -23,7 +23,7 @@ RSpec.describe Note, type: :model do
   end
 
   it "is valid with a user,project,and message" do
-    note=Note.new(
+    note=described_class.new(
       message: "sample",
       user: @user,
       project:@project
@@ -32,12 +32,13 @@ RSpec.describe Note, type: :model do
   end
 
   it "is invalid without a message"do
-    note=Note.new(message: nil)
+    note=described_class.new(message: nil)
     expect(note).not_to be_valid
     expect(note.errors[:message]).to include("can't be blank")
   end
+
   it "is invalid without a message2"do
-    note=Note.new(
+    note=described_class.new(
       message: nil,
       user:@user,
       project:@project)
@@ -48,7 +49,7 @@ RSpec.describe Note, type: :model do
   # 文字列に一致するメッセージを検索する
   describe "search message for a term" do
 
-    before(:each) do
+    before do
       @note1=@project.notes.create(
         message:"This is the first note.",
         user:@user,
@@ -70,13 +71,14 @@ RSpec.describe Note, type: :model do
     # 一致するデータが見つかる時
     context "when a match is found" do
       it "returns notes that match the search term" do
-      expect(Note.search("first")).to include(@note1,@note3)
+      expect(described_class.search("first")).to include(@note1,@note3)
       end
     end
+
     # 一致するデータが一件も見つからない時
     context "when no match is found" do
       it "returns an empty collection" do
-        expect(Note.search("message")).to be_empty
+        expect(described_class.search("message")).to be_empty
       end
 
     end
