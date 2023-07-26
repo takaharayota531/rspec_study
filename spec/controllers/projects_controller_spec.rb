@@ -5,7 +5,7 @@ RSpec.describe ProjectsController do
   describe "#index" do
     # 認証済みのユーザーとして
     context "as an authenticated user" do
-  before do
+  before(:each) do
     @user=FactoryBot.create(:user)
   end
 
