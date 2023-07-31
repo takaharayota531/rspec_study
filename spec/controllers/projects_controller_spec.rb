@@ -5,7 +5,7 @@ RSpec.describe ProjectsController do
   describe "#index" do
     # 認証済みのユーザーとして
     context "as an authenticated user" do
-  before(:each) do
+  before do
     @user=FactoryBot.create(:user)
   end
 
@@ -99,6 +99,7 @@ RSpec.describe ProjectsController do
     context "as a guest" do
       before do
         @user=FactoryBot.create(:user)
+
       end
 
       it "returns 302 http status" do

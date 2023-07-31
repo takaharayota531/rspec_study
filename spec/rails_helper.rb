@@ -20,7 +20,7 @@ require 'rspec/rails'
 # directory. Alternatively, in the individual `*_spec.rb` files, manually
 # require only the support files necessary.
 #
-Dir[Rails.root.join('spec', 'support', '**', '*.rb')].sort.each { |f| require f }
+Dir[Rails.root.join("spec/support/**/*.rb")].each { |f| require f }
 
 # Checks for pending migrations and applies them before tests are run.
 # If you are not using ActiveRecord, you can remove these lines.
@@ -63,10 +63,7 @@ RSpec.configure do |config|
 
   config.include Devise::Test::ControllerHelpers,type: :controller
   # config.include RequestSpecHelper, type: :request
-  # config.include Devise::Test::IntegrationHelpers, type: :system
-
-
-
+  config.include Devise::Test::IntegrationHelpers, type: :system
 
   # config.before(:suite) do
   #   DatabaseCleaner.clean_with(:truncation)
@@ -80,7 +77,7 @@ RSpec.configure do |config|
   #   DatabaseCleaner.strategy = :truncation
   # end
 
-  config.before(:each) do
+  config.before do
     DatabaseCleaner.start
   end
 
@@ -89,4 +86,3 @@ RSpec.configure do |config|
   # end
   config.include LoginSupport
 end
-

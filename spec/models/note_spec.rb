@@ -2,19 +2,11 @@ require 'rails_helper'
 
 RSpec.describe Note do
 
+  let(:user) { FactoryBot.create(:user) }
+  let(:project) { FactoryBot.create(:project,owner: user) }
 
-  before do
-    @user=User.create(
-      first_name: "Aaronq",
-      last_name: "Sumnerq",
-      email: "tester@example.com",
-      password: "dottle-nouveau-pavilion-tights-furze",
-      )
-    @project=@user.projects.create(
-      name:"test_project",
-      )
 
-  end
+
 
   it "generates associated data from a factory" do
     note=FactoryBot.create(:note)
@@ -25,8 +17,8 @@ RSpec.describe Note do
   it "is valid with a user,project,and message" do
     note=described_class.new(
       message: "sample",
-      user: @user,
-      project:@project
+      user:,
+      project:
     )
     expect(note).to be_valid
   end
@@ -40,8 +32,8 @@ RSpec.describe Note do
   it "is invalid without a message2"do
     note=described_class.new(
       message: nil,
-      user:@user,
-      project:@project)
+      user:,
+      project:)
     expect(note).not_to be_valid
     expect(note.errors[:message]).to include("can't be blank")
   end
@@ -49,36 +41,45 @@ RSpec.describe Note do
   # 文字列に一致するメッセージを検索する
   describe "search message for a term" do
 
-    before do
-      @note1=@project.notes.create(
-        message:"This is the first note.",
-        user:@user,
-
-      )
-      @note2=@project.notes.create(
-        message:"This is the second note.",
-        user:@user,
-
-      )
-      @note3=@project.notes.create(
-        message: "First, preheat the oven.",
-        user:@user,
-
+    let!(:note1) do
+      FactoryBot.create(
+        :note,
+        project:,
+        user:,
+        message: "This is the first note.",
         )
-
     end
+    let!(:note2) do
+      FactoryBot.create(
+        :note,
+        project:,
+        user:,
+        message: "This is the second note.",
+        )
+    end
+    let!(:note3) do
+      FactoryBot.create(
+        :note,
+        project:,
+        user:,
+        message: "First, preheat the oven.",
+        )
+    end
+
 
     # 一致するデータが見つかる時
     context "when a match is found" do
       it "returns notes that match the search term" do
-      expect(described_class.search("first")).to include(@note1,@note3)
+      expect(described_class.search("first")).to include(note1,note3)
       end
     end
 
     # 一致するデータが一件も見つからない時
     context "when no match is found" do
       it "returns an empty collection" do
+
         expect(described_class.search("message")).to be_empty
+        expect(Note.count).to eq 3
       end
 
     end

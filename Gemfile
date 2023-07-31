@@ -81,7 +81,6 @@ group :test do
   gem 'vcr' # add in chapter 10
   gem 'webmock' # add in chapter 10
   gem 'database_cleaner'
-
 end
 
 gem 'devise'
