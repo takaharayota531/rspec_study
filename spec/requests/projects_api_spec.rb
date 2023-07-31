@@ -41,9 +41,24 @@ RSpec.describe "Projects API", type: :request do
   end
   end
   context "with #update" do
-  it "creates a project" do
-    
+    before(:each) do
+      @user=FactoryBot.create(:user)
+    end
+    it "creates a project" do
+      project_attributes=FactoryBot.attributes_for(:project)
 
-  end
+      expect{
+        post api_projects_path,params:{
+          user_email:@user.email,
+          user_token:@user.authentication_token,
+          project:project_attributes
+        }
+      }.to change(@user.projects,:count).by(1)
+
+      expect(response).to have_http_status(:success)
+
+
+
+    end
   end
 end
