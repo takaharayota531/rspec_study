@@ -5,18 +5,19 @@ RSpec.describe ProjectsController do
   describe "#index" do
     # 認証済みのユーザーとして
     context "as an authenticated user" do
-  before do
-    @user=FactoryBot.create(:user)
-  end
+      let(:user){FactoryBot.create(:user)}
 
   it "responds successfully" do
-    sign_in @user
+    sign_in user
     get :index
+    aggregate_failures do
     expect(response).to be_successful
+    expect(response).to have_http_status "200"
+    end
   end
 
   it "returns a 200" do
-    sign_in @user
+    sign_in user
     get :index
     expect(response).to have_http_status "200"
   end
@@ -24,10 +25,14 @@ RSpec.describe ProjectsController do
 
     # 認証されていないユーザーの場合
     context  "as a guest" do
-      it "returns a 302 response" do
+      it "returns a 302 response and redirects to the sign-in page" do
+        # sign_in @user
         get :index
-        expect(response).to have_http_status "302"
-      end
+        aggregate_failures do
+          expect(response).to have_http_status "302"
+          expect(response).to redirect_to new_user_session_path
+        end
+        end
 
       it "redirects to the sign-in page"do
         get :index
@@ -58,17 +63,14 @@ RSpec.describe ProjectsController do
     end
 
     context "as an unauthorized user" do
-      before do
-        @user=FactoryBot.create(:user)
-        other_user=FactoryBot.create(:user)
-        @other_project=FactoryBot.create(:project,owner:other_user)
-
-      end
+      let(:user){FactoryBot.create(:user)}
+      let(:other_user){FactoryBot.create(:user)}
+      let(:other_project){FactoryBot.create(:project,owner: other_user)}
 
       # 異なるユーザーでログインした時はroot画面にリダイレクトされる
       it "redirects to the dashboard" do
-        sign_in @user
-        get :show,params:{id:@other_project.id}
+        sign_in user
+        get :show,params:{id:other_project.id}
         expect(response).to redirect_to root_path
       end
 
@@ -78,29 +80,22 @@ RSpec.describe ProjectsController do
 
   describe "#new" do
     context "as an authorized user" do
-    before do
-      @user=FactoryBot.create(:user)
-    end
+      let(:user) {FactoryBot.create(:user)}
+
 
     it "responds correctly" do
-      sign_in @user
+      sign_in user
       get :new
-      expect(response).to be_successful
+      aggregate_failures do
+        expect(response).to be_successful
+        expect(response).to have_http_status "200"
+      end
     end
 
-    it "responds correct http status" do
-      sign_in @user
-      get :new
-      expect(response).to have_http_status "200"
-    end
 
     end
 
     context "as a guest" do
-      before do
-        @user=FactoryBot.create(:user)
-
-      end
 
       it "returns 302 http status" do
         get :new
@@ -112,35 +107,31 @@ RSpec.describe ProjectsController do
         expect(response).to redirect_to new_user_session_path
       end
     end
-
   end
 
   describe "#create" do
     context "as an authenticated user"do
-      before do
-        @user=FactoryBot.create(:user)
-
-      end
+      let(:user){FactoryBot.create(:user)}
 
       # 有効な属性値の場合
       context "with valid attributes" do
       # プロジェクトを追加できること
       it "adds a project" do
         project_params=FactoryBot.attributes_for(:project)
-        sign_in @user
+        sign_in user
         expect{post :create,params:{
           project:project_params}
-        }.to change(@user.projects,:count).by(1)
+        }.to change(user.projects,:count).by(1)
       end
       end
 
       context "with invalid attributes" do
         it "does not add a project" do
           project_params=FactoryBot.attributes_for(:project,:invalid_name)
-          sign_in @user
+          sign_in user
            expect{post :create,params:{
              project:project_params}
-          }.not_to change(@user.projects,:count)
+          }.not_to change(user.projects,:count)
 
         end
       end
@@ -188,23 +179,22 @@ RSpec.describe ProjectsController do
     end
 
     context "as an unauthorized user" do
-      before do
-        @user=FactoryBot.create(:user)
-        other_user=FactoryBot.create(:user)
-        @other_project=FactoryBot.create(:project,owner:other_user,name: "other user")
-      end
+
+      let(:user){FactoryBot.create(:user)}
+      let(:other_user){FactoryBot.create(:user)}
+      let(:other_project){FactoryBot.create(:project,owner: other_user,name: "other user")}
 
       it "does not update the project" do
 
-        sign_in @user
-        get :edit ,params:{id: @other_project.id}
+        sign_in user
+        get :edit ,params:{id: other_project.id}
         expect(response).to have_http_status "302"
       end
 
       it "redirects to the dashboards" do
 
-        sign_in @user
-        get :edit ,params:{id: @other_project.id}
+        sign_in user
+        get :edit ,params:{id: other_project.id}
         expect(response).to redirect_to root_path
       end
 
